@@ -25,13 +25,14 @@ mmidb:
 
 bci_iv_2a:
   name: "BCI Competition IV 2a"
-  toplevel: <path>
+  toplevel: /dmj/fizmed/jjakubowska/TUHdata/bci_iv_2a
   tmin: -2
   tlen: 6
   data_max: 100
   data_min: -100
   extensions:
     - .raw.fif
+    - gdf
   picks:
     - eeg
   train_params:
@@ -114,24 +115,26 @@ sleep-edf:
 erpbci:
   data_max: 0.00631
   data_min: -0.00283
-  toplevel: /<path/to>/erpbci/1.0.0
-  tmin: -0.1
-  tlen: 0.7
+  toplevel: /dmj/fizmed/jjakubowska/TUHdata/erpbci/physionet.org/files/erpbci/1.0.0/
+  tmin: -0.2
+  tlen: 1
   # We low-passed offline using this parameter just so it didn't happen over and over.
   # Uncommenting this and part of LoaderERPBCI in dn3_ext.py should reproduce the same results (it says where)
-#  lpf: 120
+  lpf: 120
   extensions:
   # Swap the following for using default dataset
-#    - .edf
-    - .fif
+    - .edf
+    #- .event
+    #- .raw.fif
   picks:
     - eeg
   exclude_people:
     - s08
     - s12
     - s10
-    # This stronge person shouldn't affect anyone else, if it does just comment them out
+    # This stronge person shouldn't affect an yone else, if it does just comment them out
     - BENDR
+    - fifs
   train_params:
     epochs: 20
     batch_size: 64

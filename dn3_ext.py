@@ -243,7 +243,7 @@ class BendingCollegeWav2Vec(BaseProcess):
             encoder = nn.DataParallel(encoder)
             context_fn = nn.DataParallel(context_fn)
         if encoder_grad_frac < 1:
-            encoder.register_backward_hook(lambda module, in_grad, out_grad:
+            encoder.register_full_backward_hook(lambda module, in_grad, out_grad:
                                            tuple(encoder_grad_frac * ig for ig in in_grad))
         super(BendingCollegeWav2Vec, self).__init__(encoder=encoder, context_fn=context_fn,
                                                     loss_fn=nn.CrossEntropyLoss(), lr=learning_rate,
@@ -298,6 +298,7 @@ class BendingCollegeWav2Vec(BaseProcess):
 
         return logits.view(-1, logits.shape[-1])
 
+    # @torch.no_grad()
     def forward(self, *inputs):
         z = self.encoder(inputs[0])
 
@@ -451,7 +452,7 @@ class EncodingAugment(nn.Module):
             Permute([0, 2, 1]),
             nn.Conv1d(in_features, transformer_dim, 1),
         )
-
+    # @torch.no_grad()
     def forward(self, x, mask_t=None, mask_c=None):
         bs, feat, seq = x.shape
 
@@ -538,6 +539,7 @@ class BENDRContextualizer(nn.Module):
         self.output_layer = nn.Conv1d(self._transformer_dim, in_features, 1)
         self.apply(self.init_bert_params)
 
+    # @torch.no_grad()
     def init_bert_params(self, module):
         if isinstance(module, nn.Linear):
             # module.weight.data.normal_(mean=0.0, std=0.02)
@@ -552,7 +554,7 @@ class BENDRContextualizer(nn.Module):
         #     # module.weight.data.normal_(mean=0.0, std=std)
         #     nn.init.xavier_uniform_(module.weight.data)
         #     module.bias.data.zero_()
-
+    # @torch.no_grad()
     def forward(self, x, mask_t=None, mask_c=None):
         bs, feat, seq = x.shape
         if self.training and self.finetuning:
@@ -629,8 +631,8 @@ class LoaderERPBCI:
     @classmethod
     def __call__(cls, path: Path):
         # Data has to be preloaded to add events to it, swap edf for fif if haven't offline processed first
-        # run = mne.io.read_raw_edf(str(path), preload=True)
-        run = mne.io.read_raw_fif(str(path), preload=True)
+        run = mne.io.read_raw_edf(str(path), preload=True)
+        # run = mne.io.read_raw_fif(str(path), preload=True)
         if len(run.annotations) == 0:
             raise DN3ConfigException
         cls._make_blank_stim(run)

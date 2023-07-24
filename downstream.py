@@ -18,6 +18,9 @@ from dn3_ext import BENDRClassification, LinearHeadBENDR
 import mne
 mne.set_log_level(False)
 
+import warnings
+warnings.simplefilter("ignore", DeprecationWarning)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Fine-tunes BENDER models.")
@@ -42,7 +45,6 @@ if __name__ == '__main__':
     for ds_name, ds in tqdm.tqdm(experiment.datasets.items(), total=len(experiment.datasets.items()), desc='Datasets'):
         added_metrics, retain_best, _ = utils.get_ds_added_metrics(ds_name, args.metrics_config)
         for fold, (training, validation, test) in enumerate(tqdm.tqdm(utils.get_lmoso_iterator(ds_name, ds))):
-
             tqdm.tqdm.write(torch.cuda.memory_summary())
 
             if args.model == utils.MODEL_CHOICES[0]:
@@ -60,6 +62,9 @@ if __name__ == '__main__':
             process.fit(training_dataset=training, validation_dataset=validation, warmup_frac=0.1,
                         retain_best=retain_best, pin_memory=False, **ds.train_params)
 
+            # free up RAM!!!
+            # del training, validation
+
             if args.results_filename:
                 if isinstance(test, Thinker):
                     results.add_results_thinker(process, ds_name, test)
@@ -67,12 +72,19 @@ if __name__ == '__main__':
                     results.add_results_all_thinkers(process, ds_name, test, Fold=fold+1)
                 results.to_spreadsheet(args.results_filename)
 
+            # free up RAM!!!
+            # del test
+            
             # explicitly garbage collect here, don't want to fit two models in GPU at once
             del process
             objgraph.show_backrefs(model, filename='sample-backref-graph.png')
             del model
             torch.cuda.synchronize()
             time.sleep(10)
+            # torch.cuda.empty_cache()
+            # gc.collect()
+        # del ds
+        # print("deleted ds")
 
         if args.results_filename:
             results.performance_summary(ds_name)
