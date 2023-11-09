@@ -60,7 +60,9 @@ def get_ds(name, ds):
 
 def get_lmoso_iterator(name, ds):
     dataset = get_ds(name, ds)
+    print("dataset done")
     specific_test = ds.test_subjects if hasattr(ds, 'test_subjects') else None
+    print("Bottleneck starts!")
     iterator = dataset.lmso(ds.folds, test_splits=specific_test) \
         if hasattr(ds, 'folds') else dataset.loso(test_person_id=specific_test)
     return iterator
