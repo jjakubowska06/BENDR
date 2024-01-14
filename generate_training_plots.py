@@ -55,8 +55,9 @@ def plot_metric(df_train, df_valid, metric='Accuracy', save_file=''):
 if __name__=="__main__":
     # docelowo bedziemy brac w locie z treningu a nie z plikow, nietrudne 
 
-    trainset_logs_path = "results/logs-train.csv"
-    validset_logs_path = "results/logs-valid.csv"
+    model_desc = 'logs_AASM-hpf05_emg' 
+    trainset_logs_path = "results/train-" + model_desc + '.csv' #train-linear-logs_radam_250e_60b-01wd.csv"
+    validset_logs_path =  "results/valid-" + model_desc + '.csv'
     
     column_names=['acc','loss','lr','epoch','iteration']
 
@@ -69,8 +70,8 @@ if __name__=="__main__":
     # for valid it is different!
     # best_df_valid = get_best(df_valid)
 
-    plot_metric(best_df_train, df_valid, 'acc', 'results/plots/AAA.png')
-    plot_metric(best_df_train, df_valid, 'loss', 'results/plots/AAA222.png')
+    plot_metric(best_df_train, df_valid, 'acc', 'results/plots/acc-' + model_desc + '.png') # acc-linear-logs_radam_250e_60b-01wd.png')
+    plot_metric(best_df_train, df_valid, 'loss', 'results/plots/loss-' + model_desc + '.png')
 
     # plt.subplot(1,2,1)
     # plt.plot(best_df_train['acc'])
