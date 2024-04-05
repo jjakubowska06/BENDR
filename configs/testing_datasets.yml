@@ -1,0 +1,100 @@
+  # test_subjects:  # randomly
+  #   - s06 
+  #   - s24
+  #   - s02
+  #   - s25
+  #   - s29
+  #   - s18 # 10% ze wszystkich osób i sygnałów do testowego
+
+polid: 
+  toplevel: /dmj/fizmed/jjakubowska/dane-nowowiejska/edfs_AASM_cropped/dataset     #edfs_AASM/dataset/test
+
+  # data_max: 4460.6   # (arbitralne)
+  # data_min: -4465.7  # (arbitralne)
+  tmin: 0
+  tlen: 20
+  extensions:
+    - .edf
+  chunk_duration: 20
+  events:
+    # "0.0": 0  #-> pozostałe (nieznane)
+    "1.0": 0  # REM ? (ale na wykresach jest to dziwnie pokazane)
+    '3.0': 1  # stadium 3
+    '4.0': 2  # stadium 2
+    '5.0': 3  # stadium 1
+    '6.0': 4  # wake
+    '7.0': 5  # muscles
+
+    # # "0.0": 0  #-> pozostałe (nieznane)
+    # "1.0": 0  # REM ? (ale na wykresach jest to dziwnie pokazane)
+    # "2.0": 1  # stadium 4
+    # '3.0': 2  # stadium 3
+    # '4.0': 3  # stadium 2
+    # '5.0': 4  # stadium 1
+    # '6.0': 5  # wake
+    # '7.0': 6  # muscles
+
+  picks:
+    - eeg
+    # - eog
+    # - emg
+
+  # # filtering
+  hpf: 1
+  # lpf: 40  
+  channels: ['Fp1', 'Fpz', 'Fp2', 'F7', 'F3', 'Fz', 'F4', 'F8', 'T7', 'C3', 'Cz', 'C4', 'T8', 'P7', 'P3', 'Pz', 'P4', 'P8', 'O1', 'Oz', 'O2', 'A1', 'A2', 'EOGP', 'EOGL', 'EMG', 'ECG', 'RES']    
+
+  exclude_people:
+    - edfs
+    - fifs
+    - test
+  channels: 20
+
+
+sleep-edf:
+  name: "Sleep EDFx Cassette"
+  filename_format: "ST7{subject:2}{session:1}"
+  annotation_format: "ST7{subject:2}{session:1}*Hypnogram*"
+  toplevel: /dmj/fizmed/jjakubowska/physionet.org/files/sleep-edfx/1.0.0/sleep-telemetry/all_data_test
+  tmin: 0
+  tlen: 30
+  # data_max: 4460.6
+  # data_min: -4465.7
+  extensions:
+    - .edf
+  chunk_duration: 30
+  events:
+    'Movement time': 0
+    'Sleep stage W': 0
+    'Sleep stage 1': 1
+    'Sleep stage 2': 2
+    'Sleep stage 3': 3
+    'Sleep stage 4': 3
+    'Sleep stage R': 4
+
+  # filtry
+  # hpf: 1
+  # lpf: 49
+  
+  # test_subject:
+  #   - s03
+
+  rename_channels:
+    FP1: 'EEG Fpz-Cz'
+    PZ: 'EEG Pz-Oz'
+    HEOGL: "EOG horizontal"
+  picks:
+    - eeg
+  exclude_channels:
+    - "Resp oro-nasal"
+    - 'EMG submental'
+    - 'Temp rectal' # Comfiest sleep ever
+    - 'Marker'
+    # - 'EOG horizontal'
+  # train_params:
+  #   epochs: 600
+  #   batch_size: 80
+  #   balance_method: undersample
+  #   validation_interval: 1000
+  # lr: 0.00005
+  # folds: 10

@@ -17,6 +17,17 @@ from dn3.trainable.layers import Flatten, Permute
 from dn3.utils import DN3ConfigException
 
 
+# dla interpretowalności
+# import io
+# import requests
+# from PIL import Image
+# from torchvision import models, transforms
+# from torch.autograd import Variable
+# from torch.nn import functional as F
+# import matplotlib.pyplot as plt
+# import cv2
+# import pdb
+
 class LinearHeadBENDR(Classifier):
 
     @property
@@ -30,7 +41,7 @@ class LinearHeadBENDR(Classifier):
         return self.extended_classifier(x)
 
     def __init__(self, targets, samples, channels, encoder_h=512, projection_head=False,
-                 enc_do=0.1, feat_do=0.4, pool_length=4, mask_p_t=0.01, mask_p_c=0.005, mask_t_span=0.05,
+                 enc_do=0.1, feat_do=0.4, pool_length=1, mask_p_t=0.01, mask_p_c=0.005, mask_t_span=0.05,
                  mask_c_span=0.1, classifier_layers=1):
         if classifier_layers < 1:
             self.pool_length = pool_length
@@ -56,6 +67,8 @@ class LinearHeadBENDR(Classifier):
         classifier_layers = [self.encoder_h * self.pool_length for i in range(classifier_layers)] if \
             not isinstance(classifier_layers, (tuple, list)) else classifier_layers
         classifier_layers.insert(0, 3 * encoder_h * pool_length)
+        # classifier_layers.insert(0, encoder_h * pool_length)
+
         self.extended_classifier = nn.Sequential(Flatten())
         for i in range(1, len(classifier_layers)):
             self.extended_classifier.add_module("ext-classifier-{}".format(i), nn.Sequential(
@@ -94,7 +107,7 @@ class BENDRClassification(Classifier):
         return context[:, :, -1]
 
     def __init__(self, targets, samples, channels, encoder_h=512, contextualizer_hidden=3076, projection_head=False,
-                 new_projection_layers=0, dropout=0., trial_embeddings=None, layer_drop=0, keep_layers=None,
+                 new_projection_layers=0, dropout=0.3, trial_embeddings=None, layer_drop=0, keep_layers=None,
                  mask_p_t=0.01, mask_p_c=0.005, mask_t_span=0.1, mask_c_span=0.1, multi_gpu=False):
         self.encoder_h = encoder_h
         self.contextualizer_hidden = contextualizer_hidden
