@@ -19,7 +19,8 @@ import mne
 mne.set_log_level(False)
 
 import warnings
-warnings.simplefilter("ignore", DeprecationWarning)
+warnings.simplefilter("ignore") #, DeprecationWarning)
+
 import gc
 
 
@@ -42,37 +43,42 @@ if __name__ == '__main__':
     parser.add_argument('--logs-tracker-train', default="results/logs-train.csv", help='A path to save logs from training')
     parser.add_argument('--logs-tracker-valid', default="results/logs-valid.csv", help='A path to save logs from validation')
 
+    parser.add_argument('--experiment_name', help='The name of the experiments with diffrent cofings')
+
+
+    gc.collect()
 
     args = parser.parse_args()
     experiment = ExperimentConfig(args.ds_config)
+
+    # results_filename = #TUTAJ ZMIENIC NA AUTOMATYCZNE
+    # model_path = 
+    # args.logs_tracker_train = 
+    # args.logs_tracker_valid = #
+
     if args.results_filename:
         results = ThinkerwiseResultTracker()
-
-    # loss_and_accuracy_file = open(args.logs_tracker, 'w')
-    # set header for logs from training and validation
-    # only for trainings now
-    # ,Accuracy,loss,lr,epoch,iteration
 
     for ds_name, ds in tqdm.tqdm(experiment.datasets.items(), total=len(experiment.datasets.items()), desc='Datasets'):
         added_metrics, retain_best, _ = utils.get_ds_added_metrics(ds_name, args.metrics_config)
         iterator = tqdm.tqdm(utils.get_lmoso_iterator(ds_name, ds))
         for fold, (training, validation, test) in enumerate(iterator):
             tqdm.tqdm.write(torch.cuda.memory_summary())
+            
             if args.model == utils.MODEL_CHOICES[0]:
                 model = BENDRClassification.from_dataset(training, multi_gpu=args.multi_gpu)
             else:
                 model = LinearHeadBENDR.from_dataset(training)
-
             if not args.random_init:
                 model.load_pretrained_modules(experiment.encoder_weights, experiment.context_weights,
                                               freeze_encoder=args.freeze_encoder)
             process = StandardClassification(model, metrics=added_metrics)
-            process.set_optimizer(torch.optim.Adam(process.parameters(), ds.lr, weight_decay=0.01))
+            process.set_optimizer(torch.optim.RAdam(process.parameters(), ds.lr, weight_decay=0.01))
             # AdamW, RAdam
 
             # Fit everything
-            output_training, output_validation = process.fit(training_dataset=training, validation_dataset=validation, warmup_frac=0.1,
-                        retain_best=retain_best, pin_memory=True, **ds.train_params)
+            output_training, output_validation = process.fit(training_dataset=training, validation_dataset=validation, 
+                warmup_frac=0.1, retain_best=retain_best, pin_memory=False, **ds.train_params)
             
 
             if args.results_filename:
@@ -82,7 +88,7 @@ if __name__ == '__main__':
                     results.add_results_all_thinkers(process, ds_name, test, Fold=fold+1)
                 results.to_spreadsheet(args.results_filename)
             
-            if fold==1:
+            if fold==0:
                 # save model
                 model.save(args.model_path)
                 # save outputs from the first fold:
@@ -101,6 +107,9 @@ if __name__ == '__main__':
             torch.cuda.synchronize()
             time.sleep(10)
             gc.collect()
+            
+            if fold==0:
+                break
         
         # print("Creating ad saving plots...")
         # print("Plots saved.")

@@ -1,8 +1,8 @@
 Configuratron:
   use_only:
-    - erpbci
+    - sleep-edf
   preload: True
-  sfreq: 256 # originally 2048
+  sfreq: 100
   deep1010:
     return_mask: False
 

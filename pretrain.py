@@ -1,11 +1,14 @@
 import torch
 import tqdm
 import argparse
+import os
 
 from dn3_ext import BendingCollegeWav2Vec, ConvEncoderBENDR, BENDRContextualizer
 from dn3.configuratron import ExperimentConfig
 from dn3.transforms.instance import To1020
 from dn3.transforms.batch import RandomTemporalCrop
+from result_tracking import ThinkerwiseResultTracker
+
 
 from torch.utils.data import ConcatDataset
 
@@ -40,7 +43,7 @@ def parse_args():
     parser.add_argument('--hidden-size', default=512, type=int, help="The hidden size of the encoder.")
     parser.add_argument('--resume', default=None, type=int, help="Whether to continue training the encoder from the "
                                                                  "specified epoch.")
-    parser.add_argument('--num-workers', default=6, type=int)
+    parser.add_argument('--num-workers', default=1, type=int)
     parser.add_argument('--no-save', action='store_true', help="Don't save checkpoints while training.")
     parser.add_argument('--no-save-epochs', action='store_true', help="Don't save epoch checkpoints while training")
     return parser.parse_args()
@@ -49,12 +52,13 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
     experiment = ExperimentConfig(args.config)
+    # experiment
 
     training, validation, target_thinkers = load_datasets(experiment)
 
     encoder = ConvEncoderBENDR(len(To1020.EEG_20_div) + 1, encoder_h=args.hidden_size)
     tqdm.tqdm.write(encoder.description(experiment.global_sfreq, experiment.global_samples))
-    contextualizer = BENDRContextualizer(encoder.encoder_h, layer_drop=experiment.bending_college_args.layer_drop)
+    contextualizer = BENDRContextualizer(encoder.encoder_h, layer_drop=experiment.bending_college_args['layer_drop'])
     if args.resume is not None:
         encoder.load('checkpoints/encoder_epoch_{}.0.pt'.format(args.resume))
         contextualizer.load('checkpoints/contextualizer_epoch_{}.0.pt'.format(args.resume))
@@ -63,10 +67,13 @@ if __name__ == '__main__':
 
     # Slower learning rate for the encoder
     process.set_optimizer(torch.optim.Adam(process.parameters(), **experiment.optimizer_params))
-    process.add_batch_transform(RandomTemporalCrop(max_crop_frac=experiment.augmentation_params.batch_crop_frac))
+    process.add_batch_transform(RandomTemporalCrop(max_crop_frac=experiment.augmentation_params['batch_crop_frac']))
 
     tqdm.tqdm.write(process.description(experiment.global_samples))
 
+    # create dir for checkpoints
+    if not os.path.exists('checkpoints'):
+        os.makedirs('checkpoints')
     def epoch_checkpoint(metrics):
         if not args.no_save and not args.no_save_epochs:
             tqdm.tqdm.write("Saving...")
@@ -82,7 +89,7 @@ if __name__ == '__main__':
 
     # Slower learning rate for the encoder
     process.set_optimizer(torch.optim.Adam(process.parameters(), **experiment.optimizer_params))
-    process.add_batch_transform(RandomTemporalCrop(max_crop_frac=experiment.augmentation_params.batch_crop_frac))
+    process.add_batch_transform(RandomTemporalCrop(max_crop_frac=experiment.augmentation_params['batch_crop_frac']))
 
     tqdm.tqdm.write(process.description(experiment.global_samples))
 

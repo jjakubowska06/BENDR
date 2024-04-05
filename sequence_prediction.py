@@ -63,6 +63,7 @@ if __name__ == '__main__':
         else:
             run(dataset, ds_name, args, pretrain_experiments, sequence_experiments, results)
 
-        results.to_spreadsheet(args.results_filename)
+        print(results)
+        # results.to_spreadsheet(args.results_filename)
 
 

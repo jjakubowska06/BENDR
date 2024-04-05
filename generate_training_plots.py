@@ -12,7 +12,7 @@ def get_best(df):
         DataFrame with one less dimention with best metric values from each epoch
     '''
     n_epochs = int(df['epoch'].iloc[-1])
-    best_df = pd.DataFrame(columns=['acc','loss','lr','epoch','iteration'])
+    best_df = pd.DataFrame(columns=['acc','bac','loss','lr','epoch','iteration'])
 
     for i in range(1, n_epochs+1):
         min_loss_value_id = df[df['epoch'] == i].loss.idxmin()
@@ -24,8 +24,9 @@ def get_best(df):
 def plot_metric(df_train, df_valid, metric='Accuracy', save_file=''):
     plt.figure(figsize=[10,5])
     n_epochs = df_train.shape[0]
-    if metric=="acc":
+    if (metric=="acc" or metric=="bac"):
         ylim=[0,1.05]
+    
     else:
         ylim=[0, 2.5] #arbitralnie
 
@@ -55,11 +56,11 @@ def plot_metric(df_train, df_valid, metric='Accuracy', save_file=''):
 if __name__=="__main__":
     # docelowo bedziemy brac w locie z treningu a nie z plikow, nietrudne 
 
-    model_desc = 'logs_AASM-hpf05_emg' 
-    trainset_logs_path = "results/train-" + model_desc + '.csv' #train-linear-logs_radam_250e_60b-01wd.csv"
+    model_desc = 'linear-sleepedf-AASM-pool1-all_data-no-positioning' 
+    trainset_logs_path = "results/train-" + model_desc + '.csv' 
     validset_logs_path =  "results/valid-" + model_desc + '.csv'
     
-    column_names=['acc','loss','lr','epoch','iteration']
+    column_names=['acc', 'bac','loss','lr','epoch','iteration']
 
     df_train = pd.read_csv(trainset_logs_path, names=column_names)
     df_valid = pd.read_csv(validset_logs_path, names=column_names)
@@ -72,6 +73,7 @@ if __name__=="__main__":
 
     plot_metric(best_df_train, df_valid, 'acc', 'results/plots/acc-' + model_desc + '.png') # acc-linear-logs_radam_250e_60b-01wd.png')
     plot_metric(best_df_train, df_valid, 'loss', 'results/plots/loss-' + model_desc + '.png')
+    plot_metric(best_df_train, df_valid, 'bac', 'results/plots/bcc-' + model_desc + '.png')
 
     # plt.subplot(1,2,1)
     # plt.plot(best_df_train['acc'])

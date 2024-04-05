@@ -79,3 +79,51 @@ erpbci:
     - s10
     # This strange person shouldn't affect anyone else, if it does just comment them out
     - BENDR
+    - fifs
+
+polid:
+  toplevel: /dmj/fizmed/jjakubowska/dane-nowowiejska/edfs/test
+  # name: "Sleep EDFx Cassette"
+  # filename_format: "depb{subject:01}"
+  # annotation_format: "SC4{subject:2}{session:1}*Hypnogram*"
+  # tmin: 0
+  # tlen: 30
+  data_max: 4460.6   # (arbitralne)
+  data_min: -4465.7  # (arbitralne)
+  # tmin: 0
+  # tlen: 20
+  extensions:
+    - .edf
+  # chunk_duration: 20
+  events:
+    # 0.0 -> pozostałe (nieznane)
+    "1.0": 0  # REM ? (ale na wykresach jest to dziwnie pokazane)
+    "2.0": 1  # stadium 4
+    '3.0': 2  # stadium 3
+    '4.0': 3  # stadium 2
+    '5.0': 4  # stadium 1
+    '6.0': 5  # wake
+    '7.0': 6  # muscles
+  test_subjects:
+    - s06 
+    - s23
+    - s02
+    - s25
+    - s29
+    - s18 # 10% ze wszystkich osób i sygnałów do testowego
+  picks:
+    - eeg
+  channels: 20
+  # lpf, hpf (filrowanie)
+  #preload: False
+  exclude_people:
+    - edfs
+    - fifs
+  # train_params:
+  #   epochs: 600 #40 normalnie
+  #   batch_size: 32 # idzie dla 40
+  #   balance_method: undersample
+  #   validation_interval: 1000
+  # lr: 0.00005
+  # folds: 10 # 5 to 10
+  # preload: False

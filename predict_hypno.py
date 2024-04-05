@@ -20,8 +20,6 @@ from result_tracking import ThinkerwiseResultTracker
 
 from dn3.transforms.instance import To1020
 
-
-
 from dn3_ext import BENDRClassification, LinearHeadBENDR
 import argparse
 
@@ -50,12 +48,14 @@ if __name__ == '__main__':
 args = parser.parse_args()
 
 predictions_path = 'predictions/'
-experiment_name = 'BENDR-polid-AASM-hpf1-40_emg_filt'
+experiment_name = 'linear-sleepedf-AASM-pool1-all_data-no-positioning'
 
 experiment = ExperimentConfig("configs/testing.yml")
-test_subjects = ['s02', 's06', 's18', 's23', 's25', 's29']
-
-database_path = experiment.datasets['polid'].toplevel
+# test_subjects = ['SC4001E0',  'SC4082EP', 'SC4261FM', 'SC4331FV', 'SC4151E0']
+ #, 's04', 's05']
+database_path = experiment.datasets['sleep-edf'].toplevel
+test_subjects = os.listdir(database_path)
+print(test_subjects)
 
 if not os.path.exists(os.path.join(predictions_path, experiment_name)):
     os.mkdir(os.path.join(predictions_path, experiment_name))
@@ -64,12 +64,11 @@ if not os.path.exists(os.path.join(predictions_path, experiment_name)):
 for ds_name, ds_config in experiment.datasets.items():
     predictions = []
     for sub in test_subjects:
-        print(type(os.path.join(database_path, sub)))
         ds_config.toplevel = Path(os.path.join(database_path, sub))
         print(ds_config.toplevel)
 
         added_metrics, retain_best, _ = utils.get_ds_added_metrics(ds_name, args.metrics_config)
-
+        print(os.listdir(os.path.join(database_path, sub)))
         dataset = ds_config.auto_construct_dataset()
         
         # if jakis parametr z coonfiga: nie dodawaj lub dodaj 10-20
@@ -83,6 +82,8 @@ for ds_name, ds_config in experiment.datasets.items():
 
         # model = LinearHeadBENDR.from_dataset(dataset)
         model.load(experiment.encoder_weights, include_classifier=True)
+
+        # model.summary()
         model = model.train(False)
 
         process = StandardClassification(model, metrics=added_metrics)

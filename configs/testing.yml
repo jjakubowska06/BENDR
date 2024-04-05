@@ -1,0 +1,12 @@
+Configuratron:
+  use_only:
+    - sleep-edf
+  preload: True
+  sfreq: 100
+  deep1010:
+    return_mask: False
+
+encoder_weights: /dmj/fizmed/jjakubowska/BENDR/weights/linear-sleepedf-AASM-pool1-all_data-no-positioning.pt
+# context_weights: /dmj/fizmed/jjakubowska/BENDR/weights/contextualizer.pt
+
+datasets: !include configs/testing_datasets.yml

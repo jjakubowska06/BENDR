@@ -75,38 +75,49 @@ ern:
 
 sleep-edf:
   name: "Sleep EDFx Cassette"
-  filename_format: "SC4{subject:2}{session:1}"
-  annotation_format: "SC4{subject:2}{session:1}*Hypnogram*"
-  toplevel: /<path/to>/physionet.org/files/sleep-edfx/1.0.0/sleep-cassette/
+  # filename_format: "ST7{subject:2}"
+  filename_format: "ST7{subject:2}{session:1}"
+
+  annotation_format: "ST7{subject:2}{session:1}*Hypnogram*"
+  toplevel: /dmj/fizmed/jjakubowska/physionet.org/files/sleep-edfx/1.0.0/sleep-telemetry/all_data
   tmin: 0
   tlen: 30
-  data_max: 4460.6
-  data_min: -4465.7
+  # data_max: 4460.6
+  # data_min: -4465.7
   extensions:
     - .edf
   chunk_duration: 30
-  # events:
-  #   'Sleep stage W': 0
-  #   'Sleep stage 1': 1
-  #   'Sleep stage 2': 2
-  #   'Sleep stage 3': 3
-  #   'Sleep stage 4': 3
-  #   'Sleep stage R': 4
+  events:
+    'Movement time': 0
+    'Sleep stage W': 0
+    'Sleep stage 1': 1
+    'Sleep stage 2': 2
+    'Sleep stage 3': 3
+    'Sleep stage 4': 3
+    'Sleep stage R': 4
+
+  # filtry
+  # hpf: 1
+  # lpf: 49
+  
   test_subject:
     - s03
+
   rename_channels:
-    FPZ: 'EEG Fpz-Cz'
+    FP1: 'EEG Fpz-Cz'
     PZ: 'EEG Pz-Oz'
     HEOGL: "EOG horizontal"
   picks:
     - eeg
+    # - eog
   exclude_channels:
     - "Resp oro-nasal"
     - 'EMG submental'
     - 'Temp rectal' # Comfiest sleep ever
-    - 'Event marker'
+    - 'Marker'
+    # - 'EOG horizontal'
   train_params:
-    epochs: 40
+    epochs: 600
     batch_size: 80
     balance_method: undersample
     validation_interval: 1000
@@ -138,51 +149,68 @@ erpbci:
     - fifs
   train_params:
     epochs: 20
-    batch_size: 64
+    batch_size: 60
     balance_method: undersample
   lr: 0.00001
 
 polid: 
-  toplevel: /dmj/fizmed/jjakubowska/dane-nowowiejska/edfs/database
-  # name: "Sleep EDFx Cassette"
-  # filename_format: "depb{subject:01}"
-  # annotation_format: "SC4{subject:2}{session:1}*Hypnogram*"
-  # tmin: 0
-  # tlen: 30
-  data_max: 4460.6   # (arbitralne)
-  data_min: -4465.7  # (arbitralne)
+  toplevel: /dmj/fizmed/jjakubowska/dane-nowowiejska/edfs_AASM_cropped/dataset
+
+  data_max: True # 4460.6   # (arbitralne)
+  data_min: True #-4465.7  # (arbitralne)
   tmin: 0
   tlen: 20
   extensions:
     - .edf
   chunk_duration: 20
   events:
-    # 0.0 -> pozostałe (nieznane)
     "1.0": 0  # REM ? (ale na wykresach jest to dziwnie pokazane)
-    "2.0": 1  # stadium 4
-    '3.0': 2  # stadium 3
-    '4.0': 3  # stadium 2
-    '5.0': 4  # stadium 1
-    '6.0': 5  # wake
-    '7.0': 6  # muscles
-  test_subjects:
+    '3.0': 1  # stadium 3
+    '4.0': 2  # stadium 2
+    '5.0': 3  # stadium 1
+    '6.0': 4  # wake
+    '7.0': 5  # muscles
+
+    # #     # "0.0": 0  #-> pozostałe (nieznane)
+    # "1.0": 0  # REM ? (ale na wykresach jest to dziwnie pokazane)
+    # "2.0": 1  # stadium 4
+    # '3.0': 2  # stadium 3
+    # '4.0': 3  # stadium 2
+    # '5.0': 4  # stadium 1
+    # '6.0': 5  # wake
+    # '7.0': 6  # muscles
+
+  test_subjects:  # randomly
     - s06 
-    - s44
+    - s23
     - s02
-    - s81
-    - s44
-    - s56
-    - s27
+    - s25
+    - s29
     - s18 # 10% ze wszystkich osób i sygnałów do testowego
   picks:
     - eeg
+    # - eog
+    - emg
+
+  # filtering
+  hpf: 1
+  # lpf: 40  
+
   exclude_people:
     - edfs
     - fifs
+    - test
+  # channels: 20
+  channels: ['Fp1', 'Fpz', 'Fp2', 'F7', 'F3', 'Fz', 'F4', 'F8', 'T7', 'C3', 'Cz', 'C4', 'T8', 'P7', 'P3', 'Pz', 'P4', 'P8', 'O1', 'Oz', 'O2', 'A1', 'A2', 'EOGP', 'EOGL', 'EMG', 'ECG', 'RES']    
+
   train_params:
-    epochs: 40
-    batch_size: 40
+    epochs: 600 
+    batch_size: 60  # idzie dla 60, na fabrizzio do ok 200
     balance_method: undersample
     validation_interval: 1000
-  lr: 0.00005
-  folds: 10
+    #dropout
+  lr: 0.00005 # tutaj zmniejszyc do 0.001!!!
+  folds: 10 # 5 to 10
+  preload: False
+
+  # load_onthefly (bool)

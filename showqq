@@ -1,0 +1,53 @@
+[33mcommit 69704c00e69ecc4e45b2aa546465a95065970856[m[33m ([m[1;36mHEAD -> [m[1;32msleepedf_positioning_experiments[m[33m)[m
+Author: jjakubowska06 <j.jakubowska06@gmail.com>
+Date:   Thu Apr 4 16:25:45 2024 +0200
+
+    dobra wersja kodu do temazepamu i baseline
+
+[33mcommit 927d602610651a3ce09e201f46d973d072ad43b0[m
+Author: jjakubowska06 <j.jakubowska06@gmail.com>
+Date:   Thu Apr 4 16:13:37 2024 +0200
+
+    sleep edf analysis temazepam
+
+[33mcommit a9387e350d048ac520c2b01687d5359e97a51aea[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32msleepedf[m[33m, [m[1;32mmain[m[33m, [m[1;32mCAM[m[33m)[m
+Author: jjakubowska06 <j.jakubowska06@gmail.com>
+Date:   Sun Jan 14 10:55:58 2024 +0100
+
+    notebooks and interpretability
+
+[33mcommit ee7f1acc52ec3a431ab48deb9efdea897c50d1cf[m
+Author: jjakubowska06 <j.jakubowska06@gmail.com>
+Date:   Thu Nov 9 21:22:56 2023 +0100
+
+    training plots generation
+
+[33mcommit c9c9b27d1d0a7fc4d95302ed33a493166fd31b95[m
+Author: jjakubowska06 <j.jakubowska06@gmail.com>
+Date:   Thu Nov 9 09:51:26 2023 +0100
+
+    update with plots
+
+[33mcommit 4fa595a288773fb8fa1650751dadeefb53ee4791[m
+Author: jjakubowska06 <j.jakubowska06@gmail.com>
+Date:   Mon Jul 24 13:53:26 2023 +0200
+
+    downstream task on edf files
+
+[33mcommit ac918abaec111d15fcaa2a8fcd2bd3d8b0d81a10[m
+Author: demetres <demetres.kostas@gmail.com>
+Date:   Thu Feb 25 12:47:32 2021 -0500
+
+    Brief README.md update.
+
+[33mcommit 5a6f49365a729852a5666aa744938aa4238f7ecd[m
+Author: demetres <demetres.kostas@gmail.com>
+Date:   Thu Feb 25 12:14:43 2021 -0500
+
+    Added missing results tracking file.
+
+[33mcommit f3b27215f9b68b6b8c711d9fc3a854fd6daffa1e[m
+Author: demetres <demetres.kostas@gmail.com>
+Date:   Wed Jan 27 16:08:52 2021 -0500
+
+    Moving from dev mess to public repo.
