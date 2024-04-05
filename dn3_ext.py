@@ -66,8 +66,8 @@ class LinearHeadBENDR(Classifier):
 
         classifier_layers = [self.encoder_h * self.pool_length for i in range(classifier_layers)] if \
             not isinstance(classifier_layers, (tuple, list)) else classifier_layers
-        classifier_layers.insert(0, 3 * encoder_h * pool_length)
-        # classifier_layers.insert(0, encoder_h * pool_length)
+        # classifier_layers.insert(0, 3 * encoder_h * pool_length)
+        classifier_layers.insert(0, encoder_h * pool_length)
 
         self.extended_classifier = nn.Sequential(Flatten())
         for i in range(1, len(classifier_layers)):
@@ -450,7 +450,7 @@ class EncodingAugment(nn.Module):
         self.p_c = mask_p_c
         self.mask_t_span = mask_t_span
         self.mask_c_span = mask_c_span
-        transformer_dim = 3 * in_features
+        transformer_dim = in_features
 
         conv = nn.Conv1d(in_features, in_features, position_encoder, padding=position_encoder // 2, groups=16)
         nn.init.normal_(conv.weight, mean=0, std=2 / transformer_dim)
